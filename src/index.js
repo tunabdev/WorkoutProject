@@ -1,17 +1,58 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import { MantineProvider, ColorSchemeProvider } from "@mantine/core";
+import { NotificationsProvider } from "@mantine/notifications";
+import { useHotkeys, useLocalStorage } from "@mantine/hooks";
+import { BrowserRouter } from "react-router-dom";
+import { AuthContextProvider } from "context";
+import { NavigationProgress } from "@mantine/nprogress";
+import { WorkoutsContextProvider } from "context/workout/workoutContext";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+//
+function AppWrapper({ children }) {
+  const [colorScheme, setColorScheme] = useLocalStorage({
+    key: "mantine-color-scheme",
+    defaultValue: "light",
+    getInitialValueInEffect: true,
+  });
+
+  const toggleColorScheme = (value) =>
+    setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
+
+  useHotkeys([["Ctrl+J", () => toggleColorScheme()]]);
+
+  return (
+    <ColorSchemeProvider
+      colorScheme={colorScheme}
+      toggleColorScheme={toggleColorScheme}
+    >
+      <MantineProvider
+        theme={{ colorScheme }}
+        withGlobalStyles
+        withNormalizeCSS
+      >
+        <NotificationsProvider position="top-right" zIndex={2077}>
+          <NavigationProgress initialProgress={25} />
+          {children}
+        </NotificationsProvider>
+      </MantineProvider>
+    </ColorSchemeProvider>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <App />
+    <AuthContextProvider>
+      <WorkoutsContextProvider>
+        <BrowserRouter>
+          <AppWrapper>
+            <App />
+          </AppWrapper>
+        </BrowserRouter>
+      </WorkoutsContextProvider>
+    </AuthContextProvider>
   </React.StrictMode>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
