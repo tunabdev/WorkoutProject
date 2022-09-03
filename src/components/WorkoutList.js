@@ -80,8 +80,6 @@ export default function WorkoutList() {
     //   ),
     // });
   };
-  // console.log("selected: ", selected);
-  console.log("selected: ", selected);
 
   const deleteWorkout = async (id) => {
     const selectedWorkout = workouts.find((workout) => workout._id === id);
@@ -149,8 +147,8 @@ export default function WorkoutList() {
       workouts: filteredWorkout,
     });
     dispatchWorkout({
-      type: "CREATE_WORKOUT",
-      payload: filteredWorkout.reverse(),
+      type: "SET_WORKOUTS",
+      payload: filteredWorkout,
     });
   };
   const handleUpdateError = (errors) => {
@@ -226,21 +224,24 @@ export default function WorkoutList() {
             </Box>
           </Skeleton>
         ) : (
-          workouts.map((workout, duration) => (
-            <Skeleton
-              className="w-full h-full"
-              visible={loading}
-              height={189}
-              key={workout._id}
-            >
-              <WorkoutList.Item
-                transition={duration}
-                workout={workout}
-                deleteWorkout={deleteWorkout}
-                openUpdateModal={openUpdateModal}
-              />
-            </Skeleton>
-          ))
+          React.Children.toArray(
+            workouts.map((workout, key) => {
+              return (
+                <Skeleton
+                  className="w-full h-full"
+                  visible={loading}
+                  height={189}
+                >
+                  <WorkoutList.Item
+                    transition={key}
+                    workout={workout}
+                    deleteWorkout={deleteWorkout}
+                    openUpdateModal={openUpdateModal}
+                  />
+                </Skeleton>
+              );
+            })
+          )
         )}
       </Stack>
     </>
