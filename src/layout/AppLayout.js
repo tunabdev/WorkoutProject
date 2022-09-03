@@ -9,7 +9,8 @@ import {
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons";
-import { useAuth, useWorkout } from "hooks";
+import { useAuth } from "hooks";
+import { useState } from "react";
 import { useCallback } from "react";
 import {
   Routes,
@@ -18,17 +19,14 @@ import {
   Link,
   Navigate,
   useNavigate,
+  useLocation,
 } from "react-router-dom";
 import { logout } from "services/firebase";
 
 export function AppLayout() {
   const { user, dispatch } = useAuth();
-  const { dispatchWorkout } = useWorkout();
+  const location = useLocation();
   const navigate = useNavigate();
-  const dispatches = useCallback(() => {
-    // dispatchWorkout({ type: "SET_WORKOUTS", payload: [] });
-    dispatch({ type: "LOGGED OUT" });
-  }, [dispatch]);
 
   const handleLogout = async () => {
     const isLoggedOut = await logout();
@@ -39,7 +37,6 @@ export function AppLayout() {
         message: "Logged out successfully",
         color: "green",
       });
-      dispatches();
     } else {
       showNotification({
         icon: <IconX />,
@@ -48,9 +45,9 @@ export function AppLayout() {
       });
     }
   };
-  const handleLogin = () => {
+  const handleNavigate = (To) => {
     if (!user) {
-      navigate("/login");
+      navigate(To === "/login" ? "/register" : "/login");
     }
   };
   return (
@@ -71,8 +68,12 @@ export function AppLayout() {
               Log out
             </Button>
           ) : (
-            <Button color="teal" onClick={handleLogin} className="float-right">
-              Log in
+            <Button
+              color="teal"
+              onClick={() => handleNavigate(location.pathname)}
+              className="float-right"
+            >
+              {location.pathname === "/login" ? "Register" : "Log in"}
             </Button>
           )}
         </Header>

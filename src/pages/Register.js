@@ -55,7 +55,12 @@ export function Register() {
     } else {
       dispatch({ type: "NO USER" });
       setLoading(false);
-      showNotification({ icon: <IconX />, message: response, color: "red" });
+      showNotification({
+        icon: <IconX />,
+        message: response,
+        color: "red",
+        autoClose: false,
+      });
     }
   };
 

@@ -5,7 +5,7 @@ import {
   signOut,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 
 //
 // Your web app's Firebase configuration
@@ -27,7 +27,26 @@ export const auth = getAuth();
 export const register = async (email, password, username, full_name) => {
   try {
     const user = await createUserWithEmailAndPassword(auth, email, password);
-    return user;
+    const docRef = doc(db, "users", user.user.uid);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      return;
+    } else {
+      const _JWTToken = await user.user.getIdToken();
+      const { displayName, email, emailVerified, photoURL } =
+        user.user;
+      await setDoc(docRef, {
+        displayName,
+        username,
+        full_name,
+        email,
+        emailVerified,
+        photoURL,
+        workouts: [],
+        _JWTToken,
+      });
+      return user;
+    }
   } catch (error) {
     //error.code, erro.message
     return error.message;

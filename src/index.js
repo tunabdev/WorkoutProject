@@ -4,12 +4,13 @@ import "./index.css";
 import App from "./App";
 import { MantineProvider, ColorSchemeProvider } from "@mantine/core";
 import { NotificationsProvider } from "@mantine/notifications";
-import { useHotkeys, useLocalStorage } from "@mantine/hooks";
+// import { useHotkeys, useLocalStorage } from "@mantine/hooks";
 import { BrowserRouter } from "react-router-dom";
 import { AuthContextProvider } from "context";
 import { NavigationProgress } from "@mantine/nprogress";
 import { WorkoutsContextProvider } from "context/workout/workoutContext";
-
+import { ModalsProvider } from "@mantine/modals";
+import { useHotkeys, useLocalStorage } from "@mantine/hooks";
 //
 function AppWrapper({ children }) {
   const [colorScheme, setColorScheme] = useLocalStorage({
@@ -33,10 +34,12 @@ function AppWrapper({ children }) {
         withGlobalStyles
         withNormalizeCSS
       >
-        <NotificationsProvider position="top-right" zIndex={2077}>
-          <NavigationProgress initialProgress={25} />
-          {children}
-        </NotificationsProvider>
+        <ModalsProvider>
+          <NotificationsProvider position="top-right" zIndex={2077}>
+            <NavigationProgress initialProgress={25} />
+            {children}
+          </NotificationsProvider>
+        </ModalsProvider>
       </MantineProvider>
     </ColorSchemeProvider>
   );
