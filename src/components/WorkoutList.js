@@ -24,6 +24,7 @@ import { IconTrash } from "@tabler/icons";
 import { useForm, yupResolver } from "@mantine/form";
 import { UpdateSchema } from "validation";
 import { randomId } from "@mantine/hooks";
+import { closeAllModals, closeModal } from "@mantine/modals";
 //
 export default function WorkoutList() {
   const { user } = useAuth();
@@ -127,6 +128,7 @@ export default function WorkoutList() {
     validate: yupResolver(UpdateSchema),
   });
   const handleUpdate = async (value) => {
+    setLoading(true);
     const { title, load, reps } = value;
 
     let data = {
@@ -140,7 +142,7 @@ export default function WorkoutList() {
     const filteredWorkout = workouts.filter(
       (workout) => workout._id !== selected[0]._id
     );
-    // filteredWorkout.splice(selected[1], 0, data);
+
     filteredWorkout.splice(selected[1], 0, data);
     console.log("fiWo: ", filteredWorkout);
     await updateDoc(doc(db, "users", user), {
@@ -150,6 +152,8 @@ export default function WorkoutList() {
       type: "SET_WORKOUTS",
       payload: filteredWorkout,
     });
+    setLoading(false);
+    setOpened(false);
   };
   const handleUpdateError = (errors) => {
     console.log(errors);
@@ -161,6 +165,8 @@ export default function WorkoutList() {
         opened={opened}
         onClose={() => setOpened(false)}
         title="Update Workout"
+        overlayBlur={2}
+        overlayOpacity={0.55}
       >
         <form onSubmit={form.onSubmit(handleUpdate, handleUpdateError)}>
           <TextInput
@@ -182,6 +188,7 @@ export default function WorkoutList() {
             {...form.getInputProps("reps")}
           />
           <Button
+            disabled={loading}
             variant="filled"
             color="teal"
             fullWidth
@@ -194,7 +201,6 @@ export default function WorkoutList() {
         </form>
       </Modal>
       {/*Modal sonrası */}
-      <button onClick={() => setOpened(!opened)}>Modal</button>
       <Stack spacing="lg" className="w-full h-full">
         {loading || workouts?.length === 0 ? (
           <Skeleton className="w-full h-[80vh]" visible={loading} radius="lg">
