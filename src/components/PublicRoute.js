@@ -1,12 +1,14 @@
 import { useAuth } from "hooks";
-import React from "react";
+import React, { useEffect } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 
 export default function PublicRoute({ children }) {
   const location = useLocation();
   const { user } = useAuth();
 
-  if (user) {
+  console.log("publicRoute: ",user);
+  
+  if (user?.uid) {
     return (
       <Navigate
         to="/"

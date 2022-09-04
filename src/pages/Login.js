@@ -38,14 +38,14 @@ export function Login() {
     console.log("response :", response);
 
     if (response?.user) {
-      dispatch({ type: "LOGGED IN", payload: response.user.uid });
+      dispatch({ type: "LOGGED IN", payload: response.user});
       setLoading(false);
-      showNotification({
-        title: "EASY PEASY",
-        message: "Logged in successfully",
-        color: "green",
-        icon: <IconCheck />,
-      });
+      // showNotification({
+      //   title: "EASY PEASY",
+      //   message: "Logged in successfully",
+      //   color: "green",
+      //   icon: <IconCheck />,
+      // });
       setTimeout(() => {
         console.log("timeout");
         navigate("/");

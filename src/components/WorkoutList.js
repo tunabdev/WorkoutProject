@@ -85,7 +85,7 @@ export default function WorkoutList() {
   const deleteWorkout = async (id) => {
     const selectedWorkout = workouts.find((workout) => workout._id === id);
     console.log(selectedWorkout);
-    await updateDoc(doc(db, "users", user), {
+    await updateDoc(doc(db, "users", user.uid), {
       workouts: arrayRemove(selectedWorkout),
     });
     dispatchWorkout({ type: "DELETE_WORKOUT", payload: id });
@@ -93,9 +93,9 @@ export default function WorkoutList() {
   useEffect(() => {
     // const controller = new AbortController();
     setLoading(true);
-    if (user) {
+    if (user?.uid) {
       const fetchWorkoutList = async () => {
-        const docRef = doc(db, "users", user);
+        const docRef = doc(db, "users", user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           dispatchWorkout({
@@ -114,7 +114,7 @@ export default function WorkoutList() {
     }
 
     return () => {};
-  }, [user, dispatchWorkout]);
+  }, [user?.uid, dispatchWorkout]);
 
   // return <pre> {JSON.stringify(workouts, null, 2)}</pre>;
 
@@ -145,7 +145,7 @@ export default function WorkoutList() {
 
     filteredWorkout.splice(selected[1], 0, data);
     console.log("fiWo: ", filteredWorkout);
-    await updateDoc(doc(db, "users", user), {
+    await updateDoc(doc(db, "users", user?.uid), {
       workouts: filteredWorkout,
     });
     dispatchWorkout({
@@ -231,7 +231,7 @@ export default function WorkoutList() {
           </Skeleton>
         ) : (
           React.Children.toArray(
-            workouts.map((workout, key) => {
+            workouts.map((workout, duration) => {
               return (
                 <Skeleton
                   className="w-full h-full"
@@ -239,7 +239,7 @@ export default function WorkoutList() {
                   height={189}
                 >
                   <WorkoutList.Item
-                    transition={key}
+                    transition={duration}
                     workout={workout}
                     deleteWorkout={deleteWorkout}
                     openUpdateModal={openUpdateModal}

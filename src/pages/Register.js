@@ -41,13 +41,14 @@ export function Register() {
     const { email, password, username, full_name } = values;
     const response = await register(email, password, username, full_name);
     if (response?.user?.uid) {
+      dispatch({ type: "LOGGED IN", payload: response.user});
+      console.log(response.user);
+      setLoading(false);
       showNotification({
         message: "You are logged in!",
         color: "green",
         icon: <IconCheck />,
       });
-      dispatch({ type: "LOGGED IN", payload: response.user.uid });
-      setLoading(false);
       setTimeout(() => {
         console.log("timeout");
         navigate(location?.state?.return_url || "/");
@@ -59,7 +60,6 @@ export function Register() {
         icon: <IconX />,
         message: response,
         color: "red",
-        autoClose: false,
       });
     }
   };

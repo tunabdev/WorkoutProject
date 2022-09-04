@@ -39,7 +39,7 @@ export default function WorkoutForm() {
     //!GET USER  const usersCollectionRef = collection(db, "cities");RS
     const { title, load, reps } = values;
 
-    if (user && typeof user === "string") {
+    if (user?.uid) {
       const data = {
         title: title.toUpperCase(),
         load,
@@ -47,7 +47,7 @@ export default function WorkoutForm() {
         createdAt: new Date().toString(),
         _id: uuid,
       };
-      await updateDoc(doc(db, "users", user), {
+      await updateDoc(doc(db, "users", user.uid), {
         workouts: arrayUnion(data),
       });
       dispatchWorkout({ type: "CREATE_WORKOUT", payload: data });

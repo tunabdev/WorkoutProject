@@ -16,11 +16,12 @@ function App() {
   const unsub = useCallback(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        dispatch({ type: "LOGGED IN", payload: user.uid });
+        console.log(user);
+        dispatch({ type: "LOGGED IN", payload: user });
       } else {
         dispatch({ type: "NO USER" });
       }
-    });
+     });
   }, [dispatch]);
   useEffect(() => {
     return unsub;

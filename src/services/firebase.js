@@ -5,7 +5,16 @@ import {
   signOut,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  query,
+  collection,
+  where,
+  getDocs,
+} from "firebase/firestore";
 
 //
 // Your web app's Firebase configuration
@@ -26,15 +35,22 @@ export const auth = getAuth();
 
 export const register = async (email, password, username, full_name) => {
   try {
+    const q = query(collection(db, "users"), where("username", "==", username));
+    const querySnapshot = await getDocs(q);
+    console.log(querySnapshot);
+    if (querySnapshot.size > 0) {
+      throw new Error("User already exists!");
+    }
     const user = await createUserWithEmailAndPassword(auth, email, password);
+
     const docRef = doc(db, "users", user.user.uid);
     const docSnap = await getDoc(docRef);
+    console.log(docSnap.data());
     if (docSnap.exists()) {
-      return;
+      throw new Error("This user database already exists!");
     } else {
       const _JWTToken = await user.user.getIdToken();
-      const { displayName, email, emailVerified, photoURL } =
-        user.user;
+      const { displayName, email, emailVerified, photoURL } = user.user;
       await setDoc(docRef, {
         displayName,
         username,
@@ -49,7 +65,7 @@ export const register = async (email, password, username, full_name) => {
     }
   } catch (error) {
     //error.code, erro.message
-    return error.message;
+    return error?.message;
   }
 
   // .then((userCredential) => {
@@ -77,7 +93,7 @@ export const logout = async () => {
     await signOut(auth);
     return true;
   } catch (err) {
-    return false;
+    throw new Error("Log out issue occurred!");
   }
 };
 

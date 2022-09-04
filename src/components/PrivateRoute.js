@@ -5,7 +5,7 @@ export default function PrivateRoute({ children }) {
   const location = useLocation();
   const { user } = useAuth();
 
-  if (!user) {
+  if (!user?.uid) {
     return (
       <Navigate
         to="/login"
